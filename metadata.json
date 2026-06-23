@@ -1,0 +1,6 @@
+{
+  "name": "Obelii",
+  "description": "A curated destination for premium goods. Quiet luxury, high-fidelity retail, and editorial craftsmanship.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Bodoni Moda", serif;
+  --font-sans: "DM Sans", sans-serif;
+  
+  --spacing-gutter: 24px;
+  --spacing-margin-desktop: 80px;
+  --spacing-margin-mobile: 20px;
+  --spacing-stack-xl: 120px;
+  --spacing-stack-md: 48px;
+  --spacing-stack-sm: 16px;
+  --width-container-max: 1440px;
+  
+  --color-brand-alabaster: #fbf9f9;
+  --color-brand-dim: #dbdad9;
+  --color-brand-charcoal: #1b1c1c;
+  --color-brand-gold: #a17f3b;
+  --color-brand-gray: #5e5e5d;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-alabaster);
+    color: var(--color-brand-charcoal);
+    font-family: var(--font-sans);
+  }
+}
