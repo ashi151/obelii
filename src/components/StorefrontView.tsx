@@ -107,7 +107,7 @@ export default function StorefrontView({
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#fbf9f9]/40 to-[#fbf9f9] pointer-events-none" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-20 text-center py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-20 text-center py-20 animate-fade-in">
           <div className="overflow-hidden mb-6">
             <h1 className="font-serif text-4xl md:text-6xl text-brand-charcoal leading-tight tracking-tight max-w-4xl mx-auto drop-shadow-sm">
               A New Era of E-commerce.

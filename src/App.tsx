@@ -6,7 +6,7 @@ import ProductDetailDrawer from "./components/ProductDetailDrawer";
 import SignInModal from "./components/SignInModal";
 import MemberDrawer from "./components/MemberDrawer";
 import { CuratedProduct } from "./types";
-import { Shield, Mail, Check, X, ArrowRight, Menu, User, LogOut } from "lucide-react";
+import { Shield, Mail, Check, X, ArrowRight, Menu, User, LogOut, Sparkles, Home } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -26,6 +26,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showMemberDrawer, setShowMemberDrawer] = useState(false);
+  const [memberDrawerTab, setMemberDrawerTab] = useState<"home" | "account">("home");
 
   // Google sign up states in waitlist modal
   const [showGoogleChooserWaitlist, setShowGoogleChooserWaitlist] = useState(false);
@@ -214,13 +215,28 @@ export default function App() {
           {/* Action button */}
           <div className="hidden md:flex items-center gap-4">
             {isLoggedIn ? (
-              <button
-                onClick={() => setShowMemberDrawer(true)}
-                className="font-sans text-xs tracking-widest bg-brand-charcoal text-[#fbf9f9] border border-brand-charcoal px-6 py-3.5 hover:bg-transparent hover:text-brand-charcoal transition-all duration-300 uppercase font-semibold hover:shadow-lg hover:shadow-brand-charcoal/5 flex items-center gap-2"
-              >
-                <User size={13} className="text-brand-gold stroke-[2.5]" />
-                Collector Room
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setMemberDrawerTab("home");
+                    setShowMemberDrawer(true);
+                  }}
+                  className="font-sans text-xs tracking-widest bg-brand-charcoal text-[#fbf9f9] border border-brand-charcoal px-5 py-3 hover:bg-transparent hover:text-brand-charcoal transition-all duration-300 uppercase font-semibold hover:shadow-lg hover:shadow-brand-charcoal/5 flex items-center gap-1.5"
+                >
+                  <Home size={12} className="text-brand-gold stroke-[2]" />
+                  Home
+                </button>
+                <button
+                  onClick={() => {
+                    setMemberDrawerTab("account");
+                    setShowMemberDrawer(true);
+                  }}
+                  className="font-sans text-xs tracking-widest border border-brand-charcoal/20 px-5 py-3 hover:bg-brand-charcoal hover:text-white transition-all duration-300 uppercase font-semibold hover:shadow-lg flex items-center gap-1.5"
+                >
+                  <User size={12} className="text-brand-gold stroke-[2]" />
+                  My Account
+                </button>
+              </div>
             ) : (
               <>
                 <button
@@ -242,13 +258,26 @@ export default function App() {
           {/* Mobile menu triggers */}
           <div className="flex md:hidden items-center gap-3">
             {isLoggedIn ? (
-              <button
-                onClick={() => setShowMemberDrawer(true)}
-                className="font-sans text-[10px] tracking-widest bg-brand-charcoal text-[#fbf9f9] border border-brand-charcoal px-3.5 py-2 uppercase font-bold flex items-center gap-1"
-              >
-                <User size={10} className="text-brand-gold stroke-[2.5]" />
-                Room
-              </button>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => {
+                    setMemberDrawerTab("home");
+                    setShowMemberDrawer(true);
+                  }}
+                  className="font-sans text-[10px] tracking-widest bg-brand-charcoal text-[#fbf9f9] border border-brand-charcoal px-3 py-2 uppercase font-bold flex items-center gap-1"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => {
+                    setMemberDrawerTab("account");
+                    setShowMemberDrawer(true);
+                  }}
+                  className="font-sans text-[10px] tracking-widest border border-brand-charcoal/20 px-3 py-2 uppercase font-bold flex items-center gap-1"
+                >
+                  Account
+                </button>
+              </div>
             ) : (
               <>
                 <button
@@ -307,12 +336,24 @@ export default function App() {
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
+                    setMemberDrawerTab("home");
                     setShowMemberDrawer(true);
                   }}
                   className="w-full bg-brand-charcoal text-white text-xs tracking-widest py-2.5 uppercase font-semibold text-center flex items-center justify-center gap-1.5"
                 >
-                  <User size={12} className="text-brand-gold stroke-[2.5]" />
-                  Open Collector Room
+                  <Home size={12} className="text-brand-gold stroke-[2]" />
+                  Home
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setMemberDrawerTab("account");
+                    setShowMemberDrawer(true);
+                  }}
+                  className="w-full border border-brand-charcoal/20 text-brand-charcoal text-xs tracking-widest py-2.5 uppercase font-semibold text-center flex items-center justify-center gap-1.5"
+                >
+                  <User size={12} className="text-brand-gold stroke-[2]" />
+                  My Account
                 </button>
                 <button
                   onClick={() => {
@@ -800,6 +841,8 @@ export default function App() {
         onClose={() => setShowMemberDrawer(false)}
         onSignOut={handleSignOut}
         registeredEmail={registeredEmail}
+        activeTab={memberDrawerTab}
+        setActiveTab={setMemberDrawerTab}
       />
     </div>
   );
