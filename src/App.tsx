@@ -7,6 +7,8 @@ import SignInModal from "./components/SignInModal";
 import MemberDrawer from "./components/MemberDrawer";
 import { CuratedProduct } from "./types";
 import { Shield, Mail, Check, X, ArrowRight, Menu, User, LogOut } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<CuratedProduct | null>(null);
@@ -32,17 +34,30 @@ export default function App() {
   const [googleLoadingWaitlist, setGoogleLoadingWaitlist] = useState(false);
   const [googleErrorWaitlist, setGoogleErrorWaitlist] = useState("");
 
-  // Load waitlist status from localStorage on mount
+  // Load waitlist status from localStorage and listen to Firebase auth changes on mount
   useEffect(() => {
     const saved = localStorage.getItem("obelii_waitlist_email");
     if (saved) {
       setRegisteredEmail(saved);
       setIsRegistered(true);
-      const isLogged = localStorage.getItem("obelii_logged_in") === "true";
-      if (isLogged) {
-        setIsLoggedIn(true);
-      }
     }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        if (user.email) {
+          setRegisteredEmail(user.email);
+          setIsRegistered(true);
+          localStorage.setItem("obelii_waitlist_email", user.email);
+          localStorage.setItem("obelii_logged_in", "true");
+        }
+      } else {
+        setIsLoggedIn(false);
+        localStorage.removeItem("obelii_logged_in");
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // Track active section during scroll
@@ -88,12 +103,19 @@ export default function App() {
     setIsRegistered(true);
     setIsLoggedIn(true);
     setShowSignInModal(false);
+    setShowMemberDrawer(true); // Redirect to the dashboard
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+    } catch (e) {
+      console.error("Error signing out:", e);
+    }
     localStorage.removeItem("obelii_logged_in");
     setIsLoggedIn(false);
     setShowMemberDrawer(false);
+    setShowSignInModal(true); // Return to the auth screen
   };
 
   const handleGoogleSelectWaitlist = (selectedEmail: string) => {

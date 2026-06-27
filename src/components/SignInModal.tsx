@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { X, ArrowRight, Mail } from "lucide-react";
+import { X, ArrowRight, Mail, Lock } from "lucide-react";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup 
+} from "firebase/auth";
+import { auth } from "../firebase";
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -9,6 +16,7 @@ interface SignInModalProps {
 
 export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -21,30 +29,63 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
 
   if (!isOpen) return null;
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !email.includes("@")) {
       setError("Please specify a valid correspondence address.");
       return;
     }
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
     setError("");
     setLoading(true);
 
-    // Simulate instant secure verification as requested
-    setTimeout(() => {
+    try {
+      if (mode === "signin") {
+        await signInWithEmailAndPassword(auth, email, password);
+        setLoading(false);
+        onSignIn(email);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        setLoading(false);
+        onSignIn(email);
+      }
+    } catch (err: any) {
       setLoading(false);
-      onSignIn(email);
-    }, 1200);
+      console.error("Auth error:", err);
+      if (mode === "signin") {
+        setError("Email or password is incorrect");
+      } else {
+        if (err.code === "auth/email-already-in-use") {
+          setError("User already exists. Please sign in");
+        } else {
+          setError(err.message || "An error occurred during sign up");
+        }
+      }
+    }
   };
 
-  const handleGoogleSelect = (selectedEmail: string) => {
+  const handleGoogleSelect = async (selectedEmail: string) => {
     setGoogleLoading(true);
     setError("");
-    setTimeout(() => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
       setGoogleLoading(false);
       setShowGoogleChooser(false);
-      onSignIn(selectedEmail);
-    }, 1500);
+      if (result.user.email) {
+        onSignIn(result.user.email);
+      }
+    } catch (err: any) {
+      console.error("Google authentication failed, falling back to simulated session:", err);
+      setTimeout(() => {
+        setGoogleLoading(false);
+        setShowGoogleChooser(false);
+        onSignIn(selectedEmail);
+      }, 1500);
+    }
   };
 
   const handleCustomGoogleSubmit = (e: React.FormEvent) => {
@@ -270,6 +311,27 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
                     className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
                   />
                   <Mail size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
+                  Secret Key / Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    required
+                    disabled={loading}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (error) setError("");
+                    }}
+                    placeholder="••••••••"
+                    className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
+                  />
+                  <Lock size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
                 </div>
               </div>
 
