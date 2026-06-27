@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, ArrowRight, Mail, Lock } from "lucide-react";
+import { X, ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
@@ -131,6 +131,15 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
 
       {/* Modal Card */}
       <div className="relative bg-[#fbf9f9] border border-brand-charcoal/10 w-full max-w-md p-8 shadow-2xl text-left z-10 rounded-none animate-scale-up">
+        {/* Subtle Loading Spinner Overlay */}
+        {(loading || googleLoading) && (
+          <div className="absolute inset-0 bg-[#fbf9f9]/80 backdrop-blur-xs z-30 flex flex-col items-center justify-center space-y-3 animate-fade-in">
+            <Loader2 className="w-8 h-8 text-brand-gold animate-spin stroke-[2]" />
+            <p className="text-[10px] tracking-widest font-mono text-brand-gray uppercase">
+              Authenticating...
+            </p>
+          </div>
+        )}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 hover:bg-brand-charcoal/5 text-brand-gray hover:text-brand-charcoal transition-all"

@@ -11,7 +11,8 @@ import {
   ShieldCheck, 
   KeyRound, 
   Activity,
-  Home
+  Home,
+  Loader2
 } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
@@ -172,6 +173,15 @@ export default function MemberDrawer({
 
       {/* Drawer Body */}
       <div className="relative w-full max-w-lg bg-[#fbf9f9] h-full shadow-2xl flex flex-col z-10 border-l border-brand-charcoal/10">
+        {/* Subtle Loading Spinner Overlay */}
+        {resetLoading && (
+          <div className="absolute inset-0 bg-[#fbf9f9]/80 backdrop-blur-xs z-30 flex flex-col items-center justify-center space-y-3 animate-fade-in">
+            <Loader2 className="w-8 h-8 text-brand-gold animate-spin stroke-[2]" />
+            <p className="text-[10px] tracking-widest font-mono text-brand-gray uppercase">
+              Processing request...
+            </p>
+          </div>
+        )}
         
         {/* Sticky Header */}
         <div className="sticky top-0 bg-[#fbf9f9]/90 backdrop-blur-md z-20 flex justify-between items-center px-6 py-5 border-b border-brand-charcoal/5">
@@ -236,210 +246,11 @@ export default function MemberDrawer({
                 </h4>
                 <p className="text-[11px] text-brand-gray leading-relaxed">
                   The full Obelii digital storefront is currently undergoing curation and is **not ready yet**. 
-                  As a priority member, your spot on the ledger is secured. You may use our offline curator correspondence 
-                  panel below to ask questions, request custom configurations, or reserve exclusive early-access allotments 
-                  directly from our workshops.
+                  As a member, your spot on our priority launch list is fully secured. We will notify you directly 
+                  as soon as the first physical castings are ready for allocation.
                 </p>
               </div>
-              {/* Member Card Ticket */}
-              <div className="bg-brand-charcoal text-brand-alabaster p-6 relative overflow-hidden border border-brand-charcoal/5 shadow-xl">
-                {/* Subtle background decoration */}
-                <div className="absolute -right-16 -top-16 w-44 h-44 rounded-full border border-brand-gold/10 pointer-events-none" />
-                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full border border-brand-gold/5 pointer-events-none" />
 
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="text-[9px] tracking-[0.3em] text-brand-gold font-mono uppercase block font-bold">
-                      Obelii Ledger Authorization
-                    </span>
-                    <h3 className="font-serif text-xl tracking-tight font-light mt-1">
-                      Priority Membership Pass
-                    </h3>
-                  </div>
-                  <span className="font-serif text-2xl text-brand-gold font-light italic">Ob.</span>
-                </div>
-
-                <div className="space-y-4 pt-4 border-t border-brand-alabaster/10">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-[8px] tracking-widest text-brand-alabaster/50 uppercase block">
-                        Registered Email
-                      </span>
-                      <span className="text-xs font-mono tracking-wide truncate block max-w-[180px]">
-                        {registeredEmail}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[8px] tracking-widest text-brand-alabaster/50 uppercase block">
-                        Priority Ticket
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-mono font-semibold text-brand-gold">
-                          OB-2026-04281
-                        </span>
-                        <button
-                          onClick={handleCopyTicket}
-                          className="text-brand-alabaster/50 hover:text-white transition-colors"
-                          title="Copy Ticket ID"
-                        >
-                          {copied ? <Check size={11} className="text-brand-gold" /> : <Copy size={11} />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-[8px] tracking-widest text-brand-alabaster/50 uppercase block">
-                        Sourcing Status
-                      </span>
-                      <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider block">
-                        Priority Access
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[8px] tracking-widest text-brand-alabaster/50 uppercase block">
-                        Allotment Tier
-                      </span>
-                      <span className="text-xs font-semibold text-white uppercase tracking-wider block">
-                        Active Unlimited
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Interactive Curator Correspondence Chat */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center border-b border-brand-charcoal/10 pb-2">
-                  <h4 className="font-sans text-[10px] tracking-[0.2em] font-bold text-brand-charcoal uppercase flex items-center gap-1.5">
-                    <MessageSquare size={12} className="text-brand-gold" />
-                    Curator Correspondence
-                  </h4>
-                  <span className="text-[9px] font-mono text-brand-gray uppercase">
-                    Aris Thorne, Resident
-                  </span>
-                </div>
-
-                {/* Chat Box */}
-                <div className="bg-brand-alabaster border border-brand-charcoal/5 p-4 space-y-4 max-h-[300px] overflow-y-auto rounded-none flex flex-col">
-                  {messages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      className={`max-w-[85%] rounded-none p-3.5 space-y-1.5 ${
-                        msg.sender === "member"
-                          ? "bg-brand-charcoal text-brand-alabaster self-end text-right"
-                          : "bg-white border border-brand-charcoal/5 text-brand-charcoal self-start text-left"
-                      }`}
-                    >
-                      <p className="text-xs leading-relaxed font-sans">{msg.text}</p>
-                      <span className="text-[9px] font-mono opacity-60 block">
-                        {msg.sender === "member" ? "You" : "Curator"} • {msg.time}
-                      </span>
-                    </div>
-                  ))}
-                  
-                  {isTyping && (
-                    <div className="bg-white border border-brand-charcoal/5 text-brand-charcoal self-start text-left max-w-[80%] p-3.5 space-y-1">
-                      <div className="flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-brand-charcoal/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-1.5 h-1.5 bg-brand-charcoal/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-1.5 h-1.5 bg-brand-charcoal/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </div>
-                      <span className="text-[9px] font-mono text-brand-gray">Aris is typing...</span>
-                    </div>
-                  )}
-                  <div ref={messageEndRef} />
-                </div>
-
-                {/* Send message form */}
-                <form onSubmit={handleSendMessage} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Ask Curator about materials, sizes or custom designs..."
-                    className="flex-grow bg-white border border-brand-charcoal/15 text-xs p-3 focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isTyping || !inputText.trim()}
-                    className="bg-brand-charcoal hover:bg-brand-gray text-white px-4 flex items-center justify-center transition-colors disabled:opacity-50"
-                  >
-                    <Send size={14} />
-                  </button>
-                </form>
-              </div>
-
-              {/* Member Reserved Allotments */}
-              <div className="space-y-4">
-                <div className="border-b border-brand-charcoal/10 pb-2">
-                  <h4 className="font-sans text-[10px] tracking-[0.2em] font-bold text-brand-charcoal uppercase flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-brand-gold" />
-                    Bespoke Sourced Allotments
-                  </h4>
-                </div>
-
-                <p className="font-sans text-[11px] text-brand-gray leading-relaxed">
-                  These bespoke pieces are held back exclusively for registered account members. You may request immediate direct allocation proposals.
-                </p>
-
-                <div className="space-y-3">
-                  {/* Item 1 */}
-                  <div className="bg-white border border-brand-charcoal/5 p-4 flex gap-4 items-center justify-between">
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-mono text-brand-gold uppercase tracking-wider block">
-                        Kyoto Workshop • 12 Castings
-                      </span>
-                      <h5 className="font-serif text-sm text-brand-charcoal font-medium">
-                        Kuro-Raku Smoked Clay Teacup
-                      </h5>
-                      <p className="text-[11px] text-brand-gray">
-                        Single-fire volcanic glaze with deep thermal resistance.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleRequestAllotment("Kuro-Raku Smoked Clay Teacup")}
-                      className="bg-brand-charcoal hover:bg-brand-gold text-white hover:text-brand-charcoal font-mono text-[9px] tracking-wider uppercase px-3 py-2 transition-all font-semibold whitespace-nowrap"
-                    >
-                      Request
-                    </button>
-                  </div>
-
-                  {/* Item 2 */}
-                  <div className="bg-white border border-brand-charcoal/5 p-4 flex gap-4 items-center justify-between">
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-mono text-brand-gold uppercase tracking-wider block">
-                        ओर्बिक Foundries • 6 Castings
-                      </span>
-                      <h5 className="font-serif text-sm text-brand-charcoal font-medium">
-                        Hand-Hammered Brass Sconce
-                      </h5>
-                      <p className="text-[11px] text-brand-gray">
-                        Raw brass with micro-finished edges for ambient reflection.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleRequestAllotment("Hand-Hammered Brass Sconce")}
-                      className="bg-brand-charcoal hover:bg-brand-gold text-white hover:text-brand-charcoal font-mono text-[9px] tracking-wider uppercase px-3 py-2 transition-all font-semibold whitespace-nowrap"
-                    >
-                      Request
-                    </button>
-                  </div>
-                </div>
-
-                {allotmentRequested && (
-                  <div className="bg-brand-gold/10 border border-brand-gold/25 p-3.5 flex items-start gap-2 text-brand-gold">
-                    <Check size={16} className="mt-0.5 stroke-[2.5] flex-shrink-0" />
-                    <div>
-                      <h6 className="font-serif text-xs font-semibold text-brand-charcoal">Allotment Ticket Generated</h6>
-                      <p className="text-[10px] text-brand-gray mt-0.5">
-                        Your request for <strong className="text-brand-charcoal">{allotmentRequested}</strong> was logged by Curator Aris. Check correspondence above.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           ) : (
             /* ==================== MY ACCOUNT TAB ==================== */

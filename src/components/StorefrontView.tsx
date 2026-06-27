@@ -183,90 +183,17 @@ export default function StorefrontView({
                 </button>
               </form>
             ) : (
-              <div className="bg-white/80 backdrop-blur-md border border-brand-charcoal/10 p-8 text-left relative overflow-hidden shadow-2xl">
+              <div className="bg-white/90 backdrop-blur-md border border-brand-charcoal/10 p-8 text-center relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 blur-3xl rounded-full" />
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="text-[10px] tracking-[0.25em] font-sans text-brand-gold uppercase block font-semibold">
-                      Private List Confirmed
-                    </span>
-                    <h3 className="font-serif text-2xl text-brand-charcoal mt-1">
-                      Welcome to Obelii
-                    </h3>
-                  </div>
-                  <div className="border border-brand-gold/30 px-3 py-1 font-mono text-xs text-brand-gold font-medium bg-brand-gold/5">
-                    No. 04,281
-                  </div>
+                <div className="w-12 h-12 bg-brand-gold/10 rounded-full flex items-center justify-center mx-auto text-brand-gold mb-4">
+                  <Check size={20} className="stroke-[2.5]" />
                 </div>
-
-                {!allocationSubmitted ? (
-                  <form onSubmit={handlePreferencesSubmit} className="space-y-6">
-                    <p className="font-sans text-[13px] text-brand-gray leading-relaxed">
-                      Your address <strong className="text-brand-charcoal">{registeredEmail}</strong> has been secured for the inaugural private launch. To help us personalize your priority reservation, please select your primary fields of interest:
-                    </p>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {interestsList.map((interest) => {
-                        const active = selectedInterests.includes(interest);
-                        return (
-                          <button
-                            type="button"
-                            key={interest}
-                            onClick={() => toggleInterest(interest)}
-                            className={`flex items-center gap-3 p-3 text-left text-xs tracking-wide transition-all duration-300 rounded-none border ${
-                              active
-                                ? "border-brand-charcoal bg-brand-charcoal/5 text-brand-charcoal"
-                                : "border-brand-charcoal/10 bg-transparent text-brand-gray hover:border-brand-charcoal/30"
-                            }`}
-                          >
-                            <span className={`w-4 h-4 border flex items-center justify-center text-white ${
-                              active ? "border-brand-charcoal bg-brand-charcoal" : "border-brand-charcoal/20"
-                            }`}>
-                              {active && <Check size={10} className="stroke-[3]" />}
-                            </span>
-                            {interest}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] tracking-widest text-brand-gray uppercase">
-                        Spec / Bespoke Requests (Optional)
-                      </label>
-                      <textarea
-                        value={personalNote}
-                        onChange={(e) => setPersonalNote(e.target.value)}
-                        placeholder="Tell us about specific spaces, projects, or curation interests..."
-                        className="w-full min-h-[70px] bg-brand-alabaster/50 border border-brand-charcoal/10 text-xs p-3 font-sans focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-brand-charcoal hover:bg-brand-gray text-white py-3 px-6 text-xs tracking-widest font-sans uppercase transition-colors duration-300 flex items-center justify-center gap-2"
-                    >
-                      Save Preferences <ArrowRight size={14} />
-                    </button>
-                  </form>
-                ) : (
-                  <div className="py-6 text-center space-y-4">
-                    <div className="w-12 h-12 bg-brand-gold/10 rounded-full flex items-center justify-center mx-auto text-brand-gold">
-                      <Check size={20} className="stroke-[2.5]" />
-                    </div>
-                    <h4 className="font-serif text-lg text-brand-charcoal">Preferences Logged</h4>
-                    <p className="font-sans text-xs text-brand-gray max-w-sm mx-auto leading-relaxed">
-                      We have annotated your member profile with your preferred curation themes. An invitation digest and allotment key will be issued closer to launch.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setAllocationSubmitted(false)}
-                      className="text-[10px] tracking-widest font-sans text-brand-charcoal border-b border-brand-charcoal pb-0.5 uppercase hover:opacity-70 transition-opacity"
-                    >
-                      Update Selections
-                    </button>
-                  </div>
-                )}
+                <h3 className="font-serif text-xl text-brand-charcoal mb-2">
+                  Welcome to Obelii
+                </h3>
+                <p className="font-sans text-xs text-brand-gray max-w-sm mx-auto leading-relaxed">
+                  Your address <strong className="text-brand-charcoal">{registeredEmail}</strong> has been secured for the inaugural launch list (No. 04,281).
+                </p>
               </div>
             )}
             <p className="mt-8 font-sans text-[10px] text-brand-gray tracking-wider italic opacity-80 z-10 relative">
