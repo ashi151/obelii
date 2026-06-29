@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { X, ArrowRight, Mail, Lock, Loader2, Phone } from "lucide-react";
+import { X, ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  sendPasswordResetEmail,
-  RecaptchaVerifier,
-  signInWithPhoneNumber
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -24,14 +22,6 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
-  
-  // Phone authentication states
-  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verificationId, setVerificationId] = useState<any>(null);
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [sandboxMode, setSandboxMode] = useState(false);
 
   // Google authentication simulation states
   const [showGoogleChooser, setShowGoogleChooser] = useState(false);
@@ -129,77 +119,6 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
       return;
     }
     handleGoogleSelect(customGoogleEmail);
-  };
-
-  const handleSendCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phoneNumber.trim()) {
-      setError("Please specify a valid phone number.");
-      return;
-    }
-    setError("");
-    setLoading(true);
-    setSuccessMessage("");
-
-    try {
-      let verifier = (window as any).recaptchaVerifier;
-      if (!verifier) {
-        verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "invisible",
-          callback: () => {
-            // reCAPTCHA solved
-          }
-        });
-        (window as any).recaptchaVerifier = verifier;
-      }
-
-      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-      setVerificationId(confirmation);
-      setIsCodeSent(true);
-      setLoading(false);
-      setSuccessMessage("Verification code has been dispatched to your phone.");
-    } catch (err: any) {
-      setLoading(false);
-      console.warn("Phone auth error details, switching to sandbox mode:", err?.message || err);
-      setSandboxMode(true);
-      setIsCodeSent(true);
-      setSuccessMessage("Firebase Phone Auth requires configuration. Sandbox mode has been activated. Enter 123456 to test.");
-    }
-  };
-
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verificationCode.trim()) {
-      setError("Please enter the verification code.");
-      return;
-    }
-    setError("");
-    setLoading(true);
-
-    try {
-      if (sandboxMode) {
-        if (verificationCode === "123456" || verificationCode === "888888" || verificationCode.length === 6) {
-          setLoading(false);
-          onSignIn(phoneNumber);
-        } else {
-          setLoading(false);
-          setError("Incorrect code. Try '123456' for sandbox testing.");
-        }
-      } else if (verificationId) {
-        const result = await verificationId.confirm(verificationCode);
-        setLoading(false);
-        if (result.user) {
-          onSignIn(result.user.phoneNumber || phoneNumber);
-        }
-      } else {
-        setLoading(false);
-        setError("No active verification session was found.");
-      }
-    } catch (err: any) {
-      setLoading(false);
-      console.warn("Verification code confirmation error:", err?.message || err);
-      setError(err.message || "Invalid verification code. Please try again.");
-    }
   };
 
   return (
@@ -362,73 +281,37 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
           <div className="space-y-6">
             {mode !== "forgot" && (
               /* Elegant Mode Toggles */
-              <div className="space-y-4">
-                <div className="flex border-b border-brand-charcoal/10 pb-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode("signin");
-                      setError("");
-                      setSuccessMessage("");
-                    }}
-                    className={`flex-1 pb-3 text-[10px] tracking-widest uppercase font-semibold border-b-2 transition-all text-center ${
-                      mode === "signin"
-                        ? "border-brand-charcoal text-brand-charcoal"
-                        : "border-transparent text-brand-gray/60 hover:text-brand-charcoal"
-                    }`}
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode("signup");
-                      setError("");
-                      setSuccessMessage("");
-                    }}
-                    className={`flex-1 pb-3 text-[10px] tracking-widest uppercase font-semibold border-b-2 transition-all text-center ${
-                      mode === "signup"
-                        ? "border-brand-charcoal text-brand-charcoal"
-                        : "border-transparent text-brand-gray/60 hover:text-brand-charcoal"
-                    }`}
-                  >
-                    Sign Up
-                  </button>
-                </div>
-
-                {/* Sub-selector for Email vs Phone Auth */}
-                <div className="flex gap-4 justify-center border-b border-brand-charcoal/5 pb-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMethod("email");
-                      setError("");
-                      setSuccessMessage("");
-                    }}
-                    className={`text-[10px] tracking-widest uppercase font-semibold pb-1 transition-all ${
-                      authMethod === "email"
-                        ? "text-brand-charcoal border-b-2 border-brand-charcoal font-bold"
-                        : "text-brand-gray/60 hover:text-brand-charcoal"
-                    }`}
-                  >
-                    Email Method
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMethod("phone");
-                      setError("");
-                      setSuccessMessage("");
-                    }}
-                    className={`text-[10px] tracking-widest uppercase font-semibold pb-1 transition-all ${
-                      authMethod === "phone"
-                        ? "text-brand-charcoal border-b-2 border-brand-charcoal font-bold"
-                        : "text-brand-gray/60 hover:text-brand-charcoal"
-                    }`}
-                  >
-                    Phone Number
-                  </button>
-                </div>
+              <div className="flex border-b border-brand-charcoal/10 pb-0 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setError("");
+                    setSuccessMessage("");
+                  }}
+                  className={`flex-1 pb-3 text-[10px] tracking-widest uppercase font-semibold border-b-2 transition-all text-center ${
+                    mode === "signin"
+                      ? "border-brand-charcoal text-brand-charcoal"
+                      : "border-transparent text-brand-gray/60 hover:text-brand-charcoal"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signup");
+                    setError("");
+                    setSuccessMessage("");
+                  }}
+                  className={`flex-1 pb-3 text-[10px] tracking-widest uppercase font-semibold border-b-2 transition-all text-center ${
+                    mode === "signup"
+                      ? "border-brand-charcoal text-brand-charcoal"
+                      : "border-transparent text-brand-gray/60 hover:text-brand-charcoal"
+                  }`}
+                >
+                  Sign Up
+                </button>
               </div>
             )}
 
@@ -512,239 +395,101 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
               </form>
             ) : (
               <>
-                {authMethod === "email" ? (
-                  <form onSubmit={handleEmailSubmit} className="space-y-5">
-                    <div>
-                      <span className="text-[9px] tracking-[0.25em] text-brand-gold uppercase block font-semibold mb-1">
-                        {mode === "signin" ? "Security Ledger Check" : "Inaugural Pass Registration"}
-                      </span>
-                      <h3 className="font-serif text-2xl text-brand-charcoal font-light">
-                        {mode === "signin" ? "Sign In to Member Space" : "Create Member Account"}
-                      </h3>
-                      <p className="text-xs text-brand-gray mt-2 leading-relaxed">
-                        {mode === "signin"
-                          ? "Enter your registered correspondence email to authorize entry into the secure archives."
-                          : "Register your correspondence email to immediately issue a Priority Entry Ticket for upcoming catalog allocations."}
-                      </p>
+                <form onSubmit={handleEmailSubmit} className="space-y-5">
+                  <div>
+                    <span className="text-[9px] tracking-[0.25em] text-brand-gold uppercase block font-semibold mb-1">
+                      {mode === "signin" ? "Security Ledger Check" : "Inaugural Pass Registration"}
+                    </span>
+                    <h3 className="font-serif text-2xl text-brand-charcoal font-light">
+                      {mode === "signin" ? "Sign In to Member Space" : "Create Member Account"}
+                    </h3>
+                    <p className="text-xs text-brand-gray mt-2 leading-relaxed">
+                      {mode === "signin"
+                        ? "Enter your registered correspondence email to authorize entry into the secure archives."
+                        : "Register your correspondence email to immediately issue a Priority Entry Ticket for upcoming catalog allocations."}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
+                      Your Correspondence Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        disabled={loading}
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (error) setError("");
+                        }}
+                        placeholder="email@address.com"
+                        className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
+                      />
+                      <Mail size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
                     </div>
+                  </div>
 
-                    <div className="space-y-1">
-                      <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
-                        Your Correspondence Email
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          required
-                          disabled={loading}
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (error) setError("");
-                          }}
-                          placeholder="email@address.com"
-                          className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
-                        />
-                        <Mail size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
-                      </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
+                      Secret Key / Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        required
+                        disabled={loading}
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (error) setError("");
+                        }}
+                        placeholder="••••••••"
+                        className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
+                      />
+                      <Lock size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
                     </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
-                        Secret Key / Password
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="password"
-                          required
-                          disabled={loading}
-                          value={password}
-                          onChange={(e) => {
-                            setPassword(e.target.value);
-                            if (error) setError("");
-                          }}
-                          placeholder="••••••••"
-                          className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
-                        />
-                        <Lock size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
-                      </div>
-                      {mode === "signin" && (
-                        <div className="flex justify-end pt-1">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMode("forgot");
-                              setError("");
-                              setSuccessMessage("");
-                            }}
-                            className="text-[10px] text-brand-gray hover:text-brand-charcoal tracking-widest uppercase"
-                          >
-                            Forgot Password?
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {error && (
-                      <p className="text-[11px] text-red-600 font-sans tracking-wide">
-                        {error}
-                      </p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full bg-brand-charcoal hover:bg-brand-gray text-[#fbf9f9] text-xs tracking-widest font-sans uppercase py-3.5 transition-all flex items-center justify-center gap-2 border border-brand-charcoal disabled:opacity-50"
-                    >
-                      {loading ? (
-                        <span className="flex items-center gap-2">
-                          {mode === "signin" ? "Verifying Credentials..." : "Registering Passport..."}
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          {mode === "signin" ? "Sign In" : "Sign Up"}{" "}
-                          <ArrowRight size={13} />
-                        </span>
-                      )}
-                    </button>
-                  </form>
-                ) : (
-                  /* Phone authentication form */
-                  <div className="space-y-5">
-                    <div>
-                      <span className="text-[9px] tracking-[0.25em] text-brand-gold uppercase block font-semibold mb-1">
-                        {mode === "signin" ? "Direct Line Auth" : "Inaugural Phone Registry"}
-                      </span>
-                      <h3 className="font-serif text-2xl text-brand-charcoal font-light">
-                        {mode === "signin" ? "Sign In via Phone" : "Register with Phone"}
-                      </h3>
-                      <p className="text-xs text-brand-gray mt-2 leading-relaxed">
-                        {!isCodeSent
-                          ? "Specify your phone number (including country code, e.g. +11234567890) to receive an access token."
-                          : "A 6-digit confirmation key has been dispatched to your handset. Please type it below."}
-                      </p>
-                    </div>
-
-                    <div id="recaptcha-container" className="my-1"></div>
-
-                    {!isCodeSent ? (
-                      <form onSubmit={handleSendCode} className="space-y-5">
-                        <div className="space-y-1">
-                          <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
-                            Mobile Phone Number
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="tel"
-                              required
-                              disabled={loading}
-                              value={phoneNumber}
-                              onChange={(e) => {
-                                setPhoneNumber(e.target.value);
-                                if (error) setError("");
-                              }}
-                              placeholder="+1234567890"
-                              className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim pl-6 transition-colors"
-                            />
-                            <Phone size={13} className="absolute left-0 bottom-3 text-brand-gray/60" />
-                          </div>
-                        </div>
-
-                        {error && (
-                          <p className="text-[11px] text-red-600 font-sans tracking-wide">
-                            {error}
-                          </p>
-                        )}
-
-                        {successMessage && (
-                          <p className="text-[11px] text-green-600 font-sans tracking-wide">
-                            {successMessage}
-                          </p>
-                        )}
-
+                    {mode === "signin" && (
+                      <div className="flex justify-end pt-1">
                         <button
-                          type="submit"
-                          disabled={loading}
-                          className="w-full bg-brand-charcoal hover:bg-brand-gray text-[#fbf9f9] text-xs tracking-widest font-sans uppercase py-3.5 transition-all flex items-center justify-center gap-2 border border-brand-charcoal disabled:opacity-50"
+                          type="button"
+                          onClick={() => {
+                            setMode("forgot");
+                            setError("");
+                            setSuccessMessage("");
+                          }}
+                          className="text-[10px] text-brand-gray hover:text-brand-charcoal tracking-widest uppercase"
                         >
-                          {loading ? (
-                            <span className="flex items-center gap-2">
-                              Requesting Token...
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-2">
-                              Send Code <ArrowRight size={13} />
-                            </span>
-                          )}
+                          Forgot Password?
                         </button>
-                      </form>
-                    ) : (
-                      <form onSubmit={handleVerifyCode} className="space-y-5">
-                        <div className="space-y-1">
-                          <label className="text-[10px] tracking-widest text-brand-gray uppercase font-medium">
-                            Verification Code (6-Digits)
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              maxLength={6}
-                              required
-                              disabled={loading}
-                              value={verificationCode}
-                              onChange={(e) => {
-                                setVerificationCode(e.target.value);
-                                if (error) setError("");
-                              }}
-                              placeholder="123456"
-                              className="w-full bg-transparent border-t-0 border-x-0 border-b border-brand-charcoal/20 pb-2 text-sm tracking-[0.3em] font-mono text-center focus:border-brand-charcoal focus:ring-0 rounded-none placeholder:text-brand-dim transition-colors animate-pulse"
-                            />
-                          </div>
-                        </div>
-
-                        {error && (
-                          <p className="text-[11px] text-red-600 font-sans tracking-wide">
-                            {error}
-                          </p>
-                        )}
-
-                        {successMessage && (
-                          <p className="text-[11px] text-green-600 font-sans tracking-wide">
-                            {successMessage}
-                          </p>
-                        )}
-
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsCodeSent(false);
-                              setError("");
-                              setSuccessMessage("");
-                            }}
-                            className="w-1/3 border border-brand-charcoal/15 hover:bg-brand-charcoal/5 text-brand-charcoal text-xs tracking-widest font-sans uppercase py-3.5 transition-all"
-                          >
-                            Back
-                          </button>
-                          <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-2/3 bg-brand-charcoal hover:bg-brand-gray text-[#fbf9f9] text-[#fbf9f9] text-xs tracking-widest font-sans uppercase py-3.5 transition-all flex items-center justify-center gap-2 border border-brand-charcoal disabled:opacity-50"
-                          >
-                            {loading ? (
-                              <span className="flex items-center gap-2">
-                                Authorizing...
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-2">
-                                Verify & Entry <ArrowRight size={13} />
-                              </span>
-                            )}
-                          </button>
-                        </div>
-                      </form>
+                      </div>
                     )}
                   </div>
-                )}
+
+                  {error && (
+                    <p className="text-[11px] text-red-600 font-sans tracking-wide">
+                      {error}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-brand-charcoal hover:bg-brand-gray text-[#fbf9f9] text-xs tracking-widest font-sans uppercase py-3.5 transition-all flex items-center justify-center gap-2 border border-brand-charcoal disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        {mode === "signin" ? "Verifying Credentials..." : "Registering Passport..."}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        {mode === "signin" ? "Sign In" : "Sign Up"}{" "}
+                        <ArrowRight size={13} />
+                      </span>
+                    )}
+                  </button>
+                </form>
 
                 <div className="relative flex py-1 items-center">
                   <div className="flex-grow border-t border-brand-charcoal/10"></div>
