@@ -46,12 +46,11 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true);
-        if (user.email) {
-          setRegisteredEmail(user.email);
-          setIsRegistered(true);
-          localStorage.setItem("obelii_waitlist_email", user.email);
-          localStorage.setItem("obelii_logged_in", "true");
-        }
+        const identity = user.email || user.phoneNumber || "Priority Member";
+        setRegisteredEmail(identity);
+        setIsRegistered(true);
+        localStorage.setItem("obelii_waitlist_email", identity);
+        localStorage.setItem("obelii_logged_in", "true");
       } else {
         setIsLoggedIn(false);
         localStorage.removeItem("obelii_logged_in");
