@@ -28,6 +28,23 @@ export default function AboutView() {
     },
   ];
 
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      question: "How are Obelii objects sourced?",
+      answer: "We cultivate close relationships with individual master craftspeople, independent design studios, and generational foundries across Kyoto, Copenhagen, and select regions of Portugal. Each piece is built from scratch or curated in small batch allotments, prioritizing physical honesty and ethical raw materials."
+    },
+    {
+      question: "How can I verify the authenticity of my allotment?",
+      answer: "Every Obelii object is accompanied by a physically signed Certificate of Allotment, bearing a distinct serial fingerprint and the master artisan’s personal studio stamp. We maintain an offline physical register of every transaction to guarantee generational provenance and prevent duplicates."
+    },
+    {
+      question: "What does an Obelii membership entail?",
+      answer: "The Obelii membership is an invitation-only priority tier. Registered members gain exclusive inaugural access to new collections, custom commission requests directly with master creators, private climate-controlled dispatch, and invitations to intimate, offline studio exhibitions."
+    }
+  ];
+
   return (
     <section className="py-20 px-6 md:px-20 bg-brand-alabaster max-w-7xl mx-auto text-left min-h-[85vh]">
       {/* Manifesto */}
@@ -66,6 +83,50 @@ export default function AboutView() {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* FAQ Section */}
+      <div className="max-w-3xl mb-24">
+        <span className="font-sans text-xs tracking-[0.3em] text-brand-gray uppercase font-semibold block mb-4">
+          Frequently Answered
+        </span>
+        <h2 className="font-serif text-3xl md:text-4xl text-brand-charcoal font-light tracking-tight mb-8">
+          Sourcing, Provenance, & Membership
+        </h2>
+        
+        <div className="space-y-2 border-t border-brand-charcoal/10 pt-4">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div 
+                key={idx} 
+                className="border-b border-brand-charcoal/5 pb-4"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full flex justify-between items-center py-4 text-left focus:outline-none group"
+                >
+                  <span className="font-serif text-lg md:text-xl text-brand-charcoal group-hover:text-brand-gold transition-colors duration-200">
+                    {faq.question}
+                  </span>
+                  <span className="text-brand-charcoal ml-4 font-light text-xl transition-transform duration-200">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+                <div 
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isOpen ? "max-h-60 opacity-100 mt-2" : "max-h-0 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <p className="font-sans text-xs md:text-sm text-brand-gray leading-relaxed pr-8 opacity-90">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Studio Contact / Support */}

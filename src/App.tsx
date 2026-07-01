@@ -172,9 +172,9 @@ export default function App() {
             onClick={() => {
               scrollToSection("storefront");
             }}
-            className="font-serif text-2xl tracking-tighter text-brand-charcoal hover:opacity-85 transition-opacity focus:outline-none"
+            className="font-sans text-2xl font-extrabold tracking-tighter text-brand-charcoal hover:opacity-85 transition-opacity focus:outline-none flex items-baseline"
           >
-            Obelii
+            Obelii<span className="text-[#00D23A] ml-[1px]">.</span>
           </button>
 
           {/* Desktop Navigation links */}
@@ -413,9 +413,9 @@ export default function App() {
               onClick={() => {
                 scrollToSection("storefront");
               }}
-              className="font-serif text-2xl text-brand-charcoal font-light focus:outline-none"
+              className="font-sans text-2xl font-extrabold tracking-tighter text-brand-charcoal hover:opacity-85 transition-opacity focus:outline-none flex items-baseline"
             >
-              Obelii
+              Obelii<span className="text-[#00D23A] ml-[1px]">.</span>
             </button>
             <p className="font-sans text-[11px] text-brand-gray tracking-wide leading-relaxed max-w-xs">
               A curated destination for premium goods. Quiet luxury, high-fidelity retail, and editorial craftsmanship.
@@ -569,7 +569,7 @@ export default function App() {
                       Sign up with Google
                     </h3>
                     <p className="text-xs text-brand-gray mt-1">
-                      to register your private list slot at <span className="font-serif italic font-medium">Obelii</span>
+                      to register your private list slot at <span className="font-sans font-bold text-brand-charcoal">Obelii<span className="text-[#00D23A] ml-px">.</span></span>
                     </p>
                   </div>
 

@@ -54,7 +54,9 @@ export default function ProductDetailDrawer({
         {/* Sticky Header with Brand Name */}
         <div className="sticky top-0 bg-[#fbf9f9]/90 backdrop-blur-md z-20 flex justify-between items-center px-8 py-6 border-b border-brand-charcoal/5">
           <div className="flex items-center gap-2">
-            <span className="font-serif text-xl text-brand-charcoal">Obelii</span>
+            <span className="font-sans text-lg font-extrabold tracking-tighter text-brand-charcoal flex items-baseline">
+              Obelii<span className="text-[#00D23A] ml-px">.</span>
+            </span>
             <span className="font-mono text-[9px] tracking-widest text-brand-gold bg-brand-gold/5 px-2 py-0.5 border border-brand-gold/10 uppercase">
               Curator Review
             </span>

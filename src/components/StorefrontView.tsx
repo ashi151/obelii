@@ -217,37 +217,6 @@ export default function StorefrontView({
           </p>
         </div>
 
-        {/* Featured Texture Accent - Exactly resembling the image in user request */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-24">
-          <div className="relative aspect-square overflow-hidden bg-brand-dim/30 group border border-brand-charcoal/5">
-            <img
-              alt="Premium textures"
-              className="w-full h-full object-cover grayscale opacity-90 group-hover:scale-105 transition-transform duration-[3000ms]"
-              referrerPolicy="no-referrer"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxwajXnvdAp7RvIwtkwgXNYVC2GRlGvmyzGVy674PW9ipUO8VZi2G6JC0MNta1RjxLpbH8f8U_bzSOV0BV13CyQDVIpPJUGYfR2mDP8PLi2w1OBSK4WD32HSnvqGA8Wk1D5GBdmf17ANJom7COVhjrlgD1rcFOWvozpu5UfML4dm7g-2YlcIk2vnQ3JiwoIeVpKwIReAaXkpUtQq-mvAn9m7dwIfx3D0zfU0g7bdYJ8yrA2QANhLZIkcu2tmUadtpT3hq7blehypNK"
-            />
-            <div className="absolute inset-0 border border-brand-charcoal/5 pointer-events-none" />
-          </div>
-          <div className="p-4 md:p-8 space-y-6 text-left">
-            <div className="w-12 h-[1px] bg-brand-charcoal" />
-            <h3 className="font-serif text-3xl md:text-4xl text-brand-charcoal font-light leading-tight">
-              Quiet Luxury, <br />
-              Redefined.
-            </h3>
-            <p className="font-sans text-sm text-brand-gray leading-relaxed opacity-90">
-              Our platform leverages bespoke technology to deliver a fluid environment where the product remains the absolute focus. Minimalist by nature, uncompromising in detail.
-            </p>
-            <div className="pt-4">
-              <a
-                href="#coming-soon-catalog"
-                className="font-sans text-[11px] tracking-[0.2em] text-brand-charcoal border-b border-brand-charcoal/20 hover:border-brand-charcoal transition-all pb-1 font-medium uppercase"
-              >
-                Learn More
-              </a>
-            </div>
-          </div>
-        </div>
-
         {/* Dynamic Interactive Curated Catalog Teaser - "Objects of Quiet Luxury" */}
         <div id="coming-soon-catalog" className="max-w-7xl mx-auto pt-16 border-t border-brand-charcoal/5 scroll-mt-24">
           <div className="flex flex-col md:flex-row justify-between items-baseline mb-12 gap-4 text-left">

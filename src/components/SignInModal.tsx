@@ -172,7 +172,7 @@ export default function SignInModal({ isOpen, onClose, onSignIn }: SignInModalPr
                 {mode === "signin" ? "Sign in with Google" : "Sign up with Google"}
               </h3>
               <p className="text-xs text-brand-gray mt-1">
-                to continue to <span className="font-serif italic font-medium">Obelii</span>
+                to continue to <span className="font-sans font-bold text-brand-charcoal">Obelii<span className="text-[#00D23A] ml-px">.</span></span>
               </p>
             </div>
 

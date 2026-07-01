@@ -186,7 +186,10 @@ export default function MemberDrawer({
         {/* Sticky Header */}
         <div className="sticky top-0 bg-[#fbf9f9]/90 backdrop-blur-md z-20 flex justify-between items-center px-6 py-5 border-b border-brand-charcoal/5">
           <div className="flex items-center gap-2.5">
-            <span className="font-serif text-xl text-brand-charcoal">Obelii Space</span>
+            <span className="font-sans text-lg font-extrabold tracking-tighter text-brand-charcoal flex items-baseline">
+              Obelii<span className="text-[#00D23A] ml-px">.</span>
+              <span className="font-serif text-sm font-light italic ml-1.5 text-brand-gray">Space</span>
+            </span>
             <span className="font-mono text-[9px] tracking-widest text-brand-gold bg-brand-gold/10 px-2.5 py-0.5 border border-brand-gold/20 uppercase font-semibold">
               Member Area
             </span>
